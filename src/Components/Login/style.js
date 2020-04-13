@@ -10,10 +10,6 @@ export const P = styled.label({
   textTransform: 'capitalize'
 });
 
-export const Bray = styled.input(props => ({
-  border: '2px solid red'
-}));
-
 export const Header = styled.div({
   display: 'flex',
   alignItems: 'center',
