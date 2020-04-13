@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Header, ButtonWrap, P } from './style';
 import logo from '../../Assets/Images/angeling.gif';
-import { Modal, Form, Label } from 'semantic-ui-react';
+import { Modal, Form, Label, Button } from 'semantic-ui-react';
+import firebase from '../../Config/Firebase/index';
+import { connect } from 'react-redux';
 
-const Register = ({ show, closeModal }) => {
+const Register = ({ toggleModal, loadingState, modalState }) => {
   const [inputVal, setInputVal] = useState({
     ID: '',
     Password: '',
@@ -16,16 +18,17 @@ const Register = ({ show, closeModal }) => {
   const [errPass, setErrPass] = useState(false);
   const [errConfirm, setErrConfirm] = useState(false);
   const [errEmail, setErrEmail] = useState(false);
+  const [isLoading, setIsLoading] = useState(loadingState);
 
-  useEffect(() => {
-    checkPasswordNotMatch();
-  },[inputVal.Password, inputVal.Confirm]);
-
-  const checkPasswordNotMatch = () => {
+  const checkPasswordNotMatch = useCallback(() => {
     const { Password, Confirm } = inputVal;
     const isPassMatch = Password === Confirm;
     setErrConfirm(isPassMatch? false : true)
-  }
+  },[inputVal])
+
+  useEffect(() => {
+    checkPasswordNotMatch();
+  },[checkPasswordNotMatch]);
 
   const handleInputValue = name => e => {
     const { value } = e.target;
@@ -60,10 +63,26 @@ const Register = ({ show, closeModal }) => {
     });
   }
 
-  const handleSubmitForm = (e) => {
+  const handleClearInput = () => {
+    setInputVal({ID: '', Password: '', Email: '', Confirm: '', Gender: '', Address: ''});
+  }
+
+  const handleSubmitForm = async(e) => {
+    const { Email, Password } = inputVal
     e.preventDefault();
-    alert('Berhasil');
-    closeModal();
+    try {
+      setIsLoading(true);
+      await firebase.auth().createUserWithEmailAndPassword(Email, Password);
+      handleClearInput();
+      setIsLoading(false);
+      alert('berhasil didaftarkan');
+      toggleModal();
+    }
+    catch (e) {
+      const errorCode = e.message
+      alert(errorCode);
+      setIsLoading(false);
+    }
   }
 
   const renderLabelErrID = () => {
@@ -153,13 +172,13 @@ const Register = ({ show, closeModal }) => {
   const renderButton = () => {
     return (
       <ButtonWrap>
-        <button>Register!</button>
+        <Button basic loading={isLoading} disabled={isLoading}>Register!</Button>
       </ButtonWrap>
     );
   }
 
   return (
-    <Modal trigger={<P onClick={closeModal}>dont have account?</P>} size="tiny" open={show}>
+    <Modal trigger={<P onClick={toggleModal}>dont have account?</P>} size="tiny" open={!!modalState} closeOnDimmerClick={true} onClose={toggleModal}>
       {renderHeader()}
       <div style={{margin: '1em 2em'}}>
         <Form onSubmit={handleSubmitForm}>
@@ -171,4 +190,8 @@ const Register = ({ show, closeModal }) => {
   );
 }
 
-export default Register;
+const mapStateToProps = ({ isLoading }) => ({
+  loadingState: isLoading
+});
+
+export default connect(mapStateToProps, null)(Register);

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Form, Grid, Segment, Checkbox } from 'semantic-ui-react';
 import { Header, Card, ButtonWrap, Background } from './style';
 import { isEmpty } from 'lodash';
 import Register from '../Register/index';
 import useForm from '../../Config/Hooks/useForm';
+import { connect } from 'react-redux';
 
 const initialState = ({
   id: '',
@@ -12,7 +13,6 @@ const initialState = ({
 
 const LoginForm = () => {
   const { values, handleInputText, errID, errPass } = useForm(initialState);
-  const [isLoading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   const handleToggleModal = () => {
@@ -58,7 +58,11 @@ const LoginForm = () => {
     );
   }
 
-  const modalRegister = () => <Register show={showModal} closeModal={handleToggleModal}/>
+  const modalRegister = useCallback(() => {
+    return (
+      <Register toggleModal={handleToggleModal} modalState={showModal}/>
+    )
+  },[showModal])
 
   const renderButton = () => {
     const { id, password } = values
@@ -96,4 +100,8 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+const mapStateToProps = (state) => ({
+  testRedux: state.popUpShow
+});
+
+export default connect(mapStateToProps, null)(LoginForm);
