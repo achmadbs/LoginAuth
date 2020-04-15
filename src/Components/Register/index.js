@@ -75,7 +75,7 @@ const Register = ({ toggleModal, loadingState, modalState }) => {
       await firebase.auth().createUserWithEmailAndPassword(Email, Password);
       handleClearInput();
       setIsLoading(false);
-      alert('berhasil didaftarkan');
+      alert('berhasil login');
       toggleModal();
     }
     catch (e) {
@@ -83,6 +83,15 @@ const Register = ({ toggleModal, loadingState, modalState }) => {
       alert(errorCode);
       setIsLoading(false);
     }
+  }
+
+  const renderHeader = () => {
+    return (
+      <Header>
+        <img src={logo} alt='icon'/>
+        <p>Register Your Account</p>
+      </Header>
+    );
   }
 
   const renderLabelErrID = () => {
@@ -115,15 +124,6 @@ const Register = ({ toggleModal, loadingState, modalState }) => {
         Gunakan formal email yang sesuai
       </Label>
     );
-  }  
-
-  const renderHeader = () => {
-    return (
-      <Header>
-        <img src={logo} size='tiny' alt='icon'/>
-        <p>Register Your Account</p>
-      </Header>
-    );
   }
 
   const formField = () => {
@@ -132,7 +132,7 @@ const Register = ({ toggleModal, loadingState, modalState }) => {
       <>
         <Form.Field>
           <label>ID</label>
-          <Form.Input onChange={handleInputValue('ID')}value={ID} error={errID}/>
+          <Form.Input onChange={handleInputValue('ID')} value={ID} error={errID}/>
           {renderLabelErrID()}
         </Form.Field>
         <Form.Field>
