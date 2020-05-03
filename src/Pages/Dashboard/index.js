@@ -14,10 +14,11 @@ const Dashboard = ({ getUser, getNewUser }) => {
   }
 
   return (
-    <>
+    <div style={{height: '100vh', width: '100vw', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
       Welcome to Dashboard {getUser}
+
       <button onClick={changeName}>Change</button>
-    </>
+    </div>
   );
 }
 

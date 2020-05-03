@@ -50,7 +50,7 @@ export const ButtonWrap = styled.div({
     borderRadius: 6,
     padding: '0.2em 0.5em',
     cursor: 'pointer',
-    marginRight: 6
+    marginRight: 6,
   },
   'button:focus':{
     outline: 'none',

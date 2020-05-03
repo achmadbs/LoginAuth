@@ -1,22 +1,36 @@
 import React, { useState, useCallback } from 'react';
-import { Form, Grid, Segment, Checkbox } from 'semantic-ui-react';
+import { Form, Grid, Segment, Checkbox, Loader } from 'semantic-ui-react';
 import { Header, Card, ButtonWrap, Background } from './style';
 import { isEmpty } from 'lodash';
 import Register from '../Register/index';
 import useForm from '../../Config/Hooks/useForm';
 import { connect } from 'react-redux';
+import { handleLoginForm }from '../../Config/Redux/action';
 
 const initialState = ({
   id: '',
   password:''
-})
+});
 
-const LoginForm = () => {
+const LoginForm = ({ handleLogin, isLoading }) => {
   const { values, handleInputText, errID, errPass } = useForm(initialState);
   const [showModal, setShowModal] = useState(false);
 
   const handleToggleModal = () => {
-    setShowModal(!showModal);
+    if(isLoading) {
+      return ''
+    } else {
+      setShowModal(!showModal);
+    }
+  }
+
+  const saveLocalStorage = () => {
+    localStorage.setItem('email', values.id)
+  }
+
+  const handleLoginSubmit = () => {
+    const { id, password } = values;
+    handleLogin({email: id, password});
   }
 
   const renderHeader = () => {
@@ -29,19 +43,20 @@ const LoginForm = () => {
   }
 
   const renderInputField = () => {
-    const { id, password } = values;
+    const { id, password } = values
     return (
       <>
         <Form.Group inline>
           <Form.Field>
-            <label style={{color: '#6495ED', fontWeight: 900}}>&emsp; &emsp; &nbsp; &ensp; ID &nbsp;</label>
+            <label style={{color: '#6495ED', fontWeight: 900, textIndent: '3.7rem'}}>ID</label>
             <input
               onChange={handleInputText('id')}
               value={id}
+              disabled={isLoading}
             />
           </Form.Field>
           <Form.Field>
-            <Checkbox label='keep'/>
+            <Checkbox label='keep' disabled={isLoading} onChange={saveLocalStorage}/>
           </Form.Field>
         </Form.Group>
             <Form.Group inline>
@@ -51,12 +66,15 @@ const LoginForm = () => {
               onChange={handleInputText('password')}
               value={password}
               type='password'
+              disabled={isLoading}
             />
           </Form.Field>
         </Form.Group>
       </>
     );
   }
+
+  const renderLoader = () => isLoading && <Loader active/>
 
   const modalRegister = useCallback(() => {
     return (
@@ -75,7 +93,7 @@ const LoginForm = () => {
           </div>
         </Grid.Column>
         <Grid.Column floated='right'>
-          <button disabled={!!disable } type='submit'>login</button>
+          <button disabled={!!disable} type='submit' onClick={handleLoginSubmit}>login</button>
         </Grid.Column>
       </ButtonWrap>
     );
@@ -85,6 +103,7 @@ const LoginForm = () => {
     <Background>
       <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
         <Grid.Column style={{ maxWidth: 400 }}>
+          {renderLoader()}
           <Card>
             {renderHeader()}
             <Form>
@@ -101,7 +120,11 @@ const LoginForm = () => {
 };
 
 const mapStateToProps = (state) => ({
-  testRedux: state.popUpShow
+  isLoading: state.isLoading
 });
 
-export default connect(mapStateToProps, null)(LoginForm);
+const mapStateToDispatch = (dispatch) => ({
+  handleLogin: (data) => dispatch(handleLoginForm(data))
+});
+
+export default connect(mapStateToProps, mapStateToDispatch)(LoginForm);
