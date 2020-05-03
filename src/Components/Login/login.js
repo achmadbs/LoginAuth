@@ -24,6 +24,10 @@ const LoginForm = ({ handleLogin, isLoading }) => {
     }
   }
 
+  const saveLocalStorage = () => {
+    localStorage.setItem('email', values.id)
+  }
+
   const handleLoginSubmit = () => {
     const { id, password } = values;
     handleLogin({email: id, password});
@@ -44,7 +48,7 @@ const LoginForm = ({ handleLogin, isLoading }) => {
       <>
         <Form.Group inline>
           <Form.Field>
-            <label style={{color: '#6495ED', fontWeight: 900}}>&emsp; &emsp; &nbsp; &ensp; ID &nbsp;</label>
+            <label style={{color: '#6495ED', fontWeight: 900, textIndent: '3.7rem'}}>ID</label>
             <input
               onChange={handleInputText('id')}
               value={id}
@@ -52,7 +56,7 @@ const LoginForm = ({ handleLogin, isLoading }) => {
             />
           </Form.Field>
           <Form.Field>
-            <Checkbox label='keep' disabled={isLoading}/>
+            <Checkbox label='keep' disabled={isLoading} onChange={saveLocalStorage}/>
           </Form.Field>
         </Form.Group>
             <Form.Group inline>

@@ -44,7 +44,6 @@ const Register = ({ toggleModal, loadingState, modalState }) => {
         break;
       case 'Password':
         setErrPass(!regPass.test(value.trim()), true);
-        checkPasswordNotMatch();
         break;
       case 'Confirm':
         checkPasswordNotMatch();
@@ -94,18 +93,23 @@ const Register = ({ toggleModal, loadingState, modalState }) => {
     );
   }
 
-  const renderLabelErrID = () => {
-    return errID && (
+  const renderLabelErr = (state) => {
+    let text = ''
+    switch(state) {
+      case errID:
+        text = 'ID tidak boleh kurang dari 4 karakter'
+        break;
+      case errPass:
+        text = 'Password harus terdapat huruf besar dan angka'
+        break;
+      case errEmail:
+        text = 'Gunakan formal email yang sesuai'
+        break;
+      default: break;
+    }
+    return state && (
       <Label basic color='red' pointing style={{marginTop: 0}}>
-        ID tidak boleh kurang dari 4 karakter
-      </Label>
-    );
-  }
-
-  const renderLabelErrPass = () => {
-    return errPass && (
-      <Label basic color='red' pointing style={{marginTop: 0}}>
-        Password harus terdapat huruf besar dan angka
+        {text}
       </Label>
     );
   }
@@ -118,14 +122,6 @@ const Register = ({ toggleModal, loadingState, modalState }) => {
     );
   }
 
-  const renderLabelErrEmail = () => {
-    return errEmail && (
-      <Label basic color='red' pointing style={{marginTop: 0}}>
-        Gunakan formal email yang sesuai
-      </Label>
-    );
-  }
-
   const formField = () => {
     const { ID, Password, Confirm, Email, Gender, Address } = inputVal;
     return (
@@ -133,12 +129,12 @@ const Register = ({ toggleModal, loadingState, modalState }) => {
         <Form.Field>
           <label>ID</label>
           <Form.Input onChange={handleInputValue('ID')} value={ID} error={errID}/>
-          {renderLabelErrID()}
+          {renderLabelErr(errID)}
         </Form.Field>
         <Form.Field>
           <label>Password</label>
           <Form.Input type="password" onChange={handleInputValue('Password')} value={Password} error={errPass}/>
-          {renderLabelErrPass()}
+          {renderLabelErr(errPass)}
         </Form.Field>
         <Form.Field>
           <label>Confirm Password</label>
@@ -148,7 +144,7 @@ const Register = ({ toggleModal, loadingState, modalState }) => {
         <Form.Field>
           <label>Email</label>
           <Form.Input onChange={handleInputValue('Email')} value={Email} error={errEmail}/>
-          {renderLabelErrEmail()}
+          {renderLabelErr(errEmail)}
         </Form.Field>
         <Form.Group inline>
           <Form.Radio
